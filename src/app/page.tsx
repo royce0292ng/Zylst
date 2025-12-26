@@ -1,7 +1,7 @@
 "use client"
 
-import {Card, HeroUIProvider, CardBody, DatePicker, CalendarDate} from "@heroui/react";
-import {Calendar, Pencil} from "lucide-react";
+import {Card, HeroUIProvider, CardBody, DatePicker, CalendarDate, Button, Input} from "@heroui/react";
+import {Calendar, Circle, CircleCheckBig, Pencil, Trash2} from "lucide-react";
 import React, {useState} from "react";
 import {parseDate} from "@internationalized/date";
 
@@ -27,9 +27,9 @@ export default function Home() {
         name: "Birthday Party",
         eventDate: "2025-12-25",
         items: [
-            { id: "1", text: "Send invitations", completed: false },
-            { id: "2", text: "Order cake", completed: true },
-            { id: "3", text: "Decorate venue", completed: false },
+            { id: "1", text: "Blessing", completed: false },
+            { id: "2", text: "Cake", completed: true },
+            { id: "3", text: "ToyCar", completed: false },
         ],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -140,7 +140,7 @@ export default function Home() {
                                 type="text"
                                 value={tempName}
                                 onChange={(e) => setTempName(e.target.value)}
-                                onKeyPress={(e) => e.key === "Enter" && saveName()}
+                                onKeyDown={(e) => e.key === "Enter" && saveName()}
                                 onBlur={saveName}
                                 className="px-3 py-1 border border-zinc-300 rounded font-medium text-zinc-950 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 autoFocus
@@ -183,43 +183,125 @@ export default function Home() {
                                 </button>
                                 {daysUntil >= 0 && (
                                     <span className="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-full">
-                      {daysUntil === 0 ? "Today!" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days`}
-                    </span>
+                                        {daysUntil === 0 ? "Today!" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days`}
+                                    </span>
                                 )}
                                 {daysUntil < 0 && (
                                     <span className="ml-2 px-2 py-0.5 bg-zinc-100 text-zinc-500 text-xs font-medium rounded-full">
-                      Past event
-                    </span>
+                                        Past event
+                                    </span>
                                 )}
                             </>
                         )}
                     </div>
 
                     {/* Stats */}
-                    <div className="flex gap-4 mb-6">
+                    <div className="flex gap-4">
                         <Card>
                             <CardBody className={"text-center"}>
                                 <p className="text-small text-default-500 font-medium">Total Wish</p>
-                                <p className="text-default-700 text-2xl font-semibold">{wishlist.items.length}</p>
+                                <p key={`total-${wishlist.items.length}`} className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.length}</p>
                             </CardBody>
                         </Card>
                         <Card>
                             <CardBody className={"text-center"}>
                                 <p className="text-small text-default-500 font-medium">Claimed</p>
-                                <p className="text-default-700 text-2xl font-semibold">{wishlist.items.filter((item) => item.completed).length}</p>
+                                <p key={`done-${wishlist.items.filter((item) => item.completed).length}`}
+                                   className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.filter((item) => item.completed).length}</p>
                             </CardBody>
                         </Card>
                         <Card>
                             <CardBody className={"text-center"}>
                                 <p className="text-small text-default-500 font-medium">Remaining</p>
-                                <p className="text-default-700 text-2xl font-semibold">{wishlist.items.filter((item) => !item.completed).length}</p>
+                                <p key={`left-${wishlist.items.filter((item) => !item.completed).length}`}
+                                   className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.filter((item) => !item.completed).length}</p>
                             </CardBody>
                         </Card>
                     </div>
 
                     {/* Items List */}
+                    <div className="max-w-screen space-y-2 px-4">
+                        {wishlist.items.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-zinc-400 text-lg">No items yet</p>
+                                <p className="text-zinc-300 text-sm mt-2">Add your first item below</p>
+                            </div>
+                        ) : (
+                            wishlist.items.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="group flex items-center gap-3 p-4 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all duration-200 hover:shadow-md"
+                                >
+                                    <Button
+                                        isIconOnly
+                                        onPress={() => toggleComplete(item.id) }
+                                        className={"flex-shrink-0 transition-all duration-200 bg-transparent "}
+                                    >
+                                        {!item.completed ? (
+                                            <Circle
+                                                className="w-5 h-5 text-zinc-500"
+                                                strokeWidth={2}
+                                            />
+                                        ) : (
+                                            <CircleCheckBig
+                                                className="w-5 h-5 text-zinc-500"
+                                                strokeWidth={2}
+                                                style={{
+                                                    strokeDasharray: 100,
+                                                    strokeDashoffset: 0,
+                                                    animation: "drawCheck 0.5s ease-out"
+                                                }}
+                                            />
+                                        )}
+                                    </Button>
 
+                                    <span
+                                        className={`flex-1 text-zinc-800 transition-all duration-200 truncate ${
+                                            item.completed
+                                                ? "line-through text-zinc-400"
+                                                : ""
+                                        }`}
+                                    >
+                                        {item.text}
+                                    </span>
 
+                                    <Button
+                                        isIconOnly
+                                        onPress={() => removeItem(item.id)}
+                                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 flex-shrink-0 bg-transparent"
+                                        title="Delete item"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Add Item */}
+                    {newItem ? (
+                        <div className="flex gap-2">
+                            <Input
+                                type="text"
+                                placeholder="Add new item..."
+                                value={newItem}
+                                onChange={(e) => setNewItem(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") addItem();
+                                    if (e.key === "Escape") setNewItem("");
+                                }}
+                                onBlur={() => {
+                                    if (newItem.trim()) addItem();
+                                    else setNewItem("");
+                                }}
+                                className="flex-1 px-4 py-3 rounded-xl "
+                            />
+                        </div>
+                    ) : (
+                        <Button color="primary" variant="ghost" onPress={() => setNewItem(" ")}>
+                            + Add new item
+                        </Button>
+                    )}
                 </div>
             </main>
         </div>
