@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output = "../generated/prisma"
 }
 
 datasource db {
@@ -14,7 +15,7 @@ datasource db {
 }
 
 model Wishlist {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   name      String
   eventDate DateTime
   items     Item[]
@@ -23,7 +24,7 @@ model Wishlist {
 }
 
 model Item {
-  id          String   @id @default(uuid())
+  id          String   @id @default(cuid())
   text        String
   completed   Boolean  @default(false)
   position    Int      @default(0)
