@@ -1,138 +1,170 @@
 "use client"
 
-import {Button, HeroUIProvider, Link} from "@heroui/react";
+import {
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Divider,
+    HeroUIProvider,
+    Input,
+    Link,
+    Navbar,
+    NavbarBrand,
+    NavbarContent,
+    NavbarItem
+} from "@heroui/react";
+import {Camera, Gift, Rocket, Sparkles, Target, Users} from "lucide-react";
 
 export default function HomePage() {
 
 
     return(
         <HeroUIProvider>
-            <header>
-                <nav>
-                    <strong>Zylst</strong>
-                    <ul>
-                        <li><a href="#how-it-works">How it Works</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#secret-santa">Secret Santa</a></li>
-                        <li>
-                            <button>Login</button>
-                        </li>
-                    </ul>
-                </nav>
-            </header>
+            <div className="min-h-screen bg-[#020617] text-slate-50 selection:bg-blue-500/30">
 
-            <main>
+                {/* 1. CELESTIAL BACKGROUND OVERLAY */}
+                <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]" />
+                    <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-purple-900/20 rounded-full blur-[120px]" />
+                </div>
 
-                <section id="hero">
-                    <h1>Stop Guessing. <br/> Start Gifting at the Zenith.</h1>
-                    <p>
-                        The wishlist platform where your deepest desires meet their perfect match—without spoiling the
-                        surprise.
+                {/* 2. NAVIGATION */}
+                <Navbar isBordered className="bg-black/40 backdrop-blur-md border-white/10" maxWidth="xl">
+                    <NavbarBrand>
+                        <p className="font-bold text-2xl tracking-tighter text-transparent bg-clip-text bg-linear-to-r from-white to-blue-400">
+                            ZYLST
+                        </p>
+                    </NavbarBrand>
+                    <NavbarContent className="hidden sm:flex gap-8" justify="center">
+                        <NavbarItem><Link className="text-slate-400 hover:text-white transition-colors" href="#how-it-works">How it Works</Link></NavbarItem>
+                        <NavbarItem><Link className="text-slate-400 hover:text-white transition-colors" href="#features">Features</Link></NavbarItem>
+                        <NavbarItem><Link className="text-slate-400 hover:text-white transition-colors" href="#secret-santa">Secret Santa</Link></NavbarItem>
+                    </NavbarContent>
+                    <NavbarContent justify="end">
+                        <NavbarItem>
+                            <Button variant="flat" className="text-white bg-white/10 hover:bg-white/20">Login</Button>
+                        </NavbarItem>
+                    </NavbarContent>
+                </Navbar>
+
+                {/* 3. HERO SECTION */}
+                <section className="relative z-10 flex flex-col items-center justify-center text-center pt-32 pb-20 px-6 max-w-5xl mx-auto">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
+                        <Sparkles size={14} /> <span>Redefining the Gifting Experience</span>
+                    </div>
+                    <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-6 leading-[0.9]">
+                        Stop Guessing. <br />
+                        <span className="text-transparent bg-clip-text bg-linear-to-b from-blue-400 to-blue-700">
+            Gift at the Zenith.
+          </span>
+                    </h1>
+                    <p className="text-slate-400 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
+                        The wishlist platform where your deepest desires meet their perfect match—without spoiling the surprise.
                     </p>
 
-                    <form action="#" method="POST">
-                        <label htmlFor="email">Get early access to the Zylst Beta:</label><br/>
-                        <input type="email" id="email" name="email" placeholder="Enter your email" required/>
-                        <button type="submit">Join the Zenith</button>
-                    </form>
-                    <p><small>No credit card. No disappointment. Just pure joy.</small></p>
-                </section>
-
-                <hr/>
-
-                <section id="problem">
-                    <h2>"Oh... you shouldn't have."</h2>
-                    <h3>(And you really shouldn't have.)</h3>
-                    <p>
-                        We’ve all been there. The awkward smile. The fake "thank you." The immediate plan to re-gift.
-                        Traditional gifting is a guessing game where everyone loses.
-                    </p>
-                    <p><strong>Zylst changes the coordinates.</strong></p>
-                </section>
-
-                <hr/>
-
-                <section id="how-it-works">
-                    <h2>Your Wishes, Curated. Their Choice, Guaranteed.</h2>
-
-                    <div>
-                        <h3>1. Aim High</h3>
-                        <p>Use the Zylst Scraper to save any item from any corner of the web. Price, photos, and
-                            links—all in one place.</p>
+                    {/* LEAD CAPTURE */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+                        <Input
+                            type="email"
+                            placeholder="Enter your email"
+                            variant="bordered"
+                            className="bg-black/20"
+                            classNames={{ inputWrapper: "border-white/10 focus-within:border-blue-500/50" }}
+                        />
+                        <Button color="primary" size="lg" className="font-bold bg-blue-600 shadow-lg shadow-blue-500/20">
+                            Join the Zenith
+                        </Button>
                     </div>
+                    <p className="mt-4 text-xs text-slate-500">Early access users get the "Celestial" founder badge.</p>
+                </section>
 
-                    <div>
-                        <h3>2. Share the Map</h3>
-                        <p>Send your unique Zylst link to friends and family. No more "what do you want for your
-                            birthday?" texts.</p>
+                {/* 4. THE PROBLEM & SOLUTION (Cards) */}
+                <section className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <Card className="bg-white/5 border-white/10 backdrop-blur-xl p-4">
+                            <CardHeader className="flex gap-3">
+                                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><Target size={24}/></div>
+                                <p className="text-lg font-bold">1. Aim High</p>
+                            </CardHeader>
+                            <CardBody className="text-slate-400 text-sm">
+                                Save any item from any corner of the web with the Zylst Scraper. One list to rule them all.
+                            </CardBody>
+                        </Card>
+
+                        <Card className="bg-white/5 border-white/10 backdrop-blur-xl p-4">
+                            <CardHeader className="flex gap-3">
+                                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><Users size={24}/></div>
+                                <p className="text-lg font-bold">2. Share the Map</p>
+                            </CardHeader>
+                            <CardBody className="text-slate-400 text-sm">
+                                Send your private link to your circle. No more guessing games or awkward "what do you want?" texts.
+                            </CardBody>
+                        </Card>
+
+                        <Card className="bg-white/5 border-white/10 backdrop-blur-xl p-4">
+                            <CardHeader className="flex gap-3">
+                                <div className="p-2 bg-blue-500/20 rounded-lg text-blue-400"><Sparkles size={24}/></div>
+                                <p className="text-lg font-bold">3. Mystery Claim</p>
+                            </CardHeader>
+                            <CardBody className="text-slate-400 text-sm">
+                                Items are marked as "Reserved" so you don't get duplicates, but the giver stays hidden until the big day.
+                            </CardBody>
+                        </Card>
                     </div>
+                </section>
 
-                    <div>
-                        <h3>3. The Mystery Claim</h3>
-                        <p>Friends claim exactly what you want. You’ll see the item is "Reserved" to prevent duplicates,
-                            but the giver stays a secret until the big reveal.</p>
+                {/* 5. GAMIFIED FEATURES */}
+                <section className="relative z-10 bg-white/2 border-y border-white/5 py-24 overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold mb-4 italic">Engineered for Celebration</h2>
+                            <p className="text-slate-400">Features that make giving as fun as receiving.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div className="space-y-8">
+                                <div className="flex gap-6">
+                                    <div className="h-12 w-12 shrink-0 flex items-center justify-center rounded-xl bg-linear-to-br from-blue-500 to-purple-600 text-white shadow-lg">
+                                        <Rocket size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-bold mb-2">The Lucky Wheel</h4>
+                                        <p className="text-slate-400 leading-relaxed">Can't decide? Friends can spin a "fate wheel" of your top wishes to choose which one to grant.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-6">
+                                    <div className="h-12 w-12 shrink-0 flex items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 to-blue-500 text-white shadow-lg">
+                                        <Camera size={24} />
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-bold mb-2">Proof of Joy</h4>
+                                        <p className="text-slate-400 leading-relaxed">Scan the Gift QR to instantly reveal the giver and post your reaction to the Blessings Board.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* PLACEHOLDER FOR AN IMAGE OR INTERACTIVE ELEMENT */}
+                            <div className="relative group">
+                                <div className="absolute inset-0 bg-blue-500/20 blur-[80px] group-hover:bg-blue-500/30 transition-all" />
+                                <Card className="bg-black/60 border-white/10 h-80 flex items-center justify-center overflow-hidden">
+                                    <div className="text-center">
+                                        <Gift size={80} className="text-blue-500/50 mb-4 mx-auto animate-bounce" />
+                                        <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Zylst Interactive Preview</p>
+                                    </div>
+                                </Card>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                <hr/>
+                {/* 6. FOOTER */}
+                <footer className="relative z-10 max-w-7xl mx-auto px-6 py-12 text-center text-slate-600 text-sm">
+                    <Divider className="mb-8 bg-white/5" />
+                    <p>&copy; 2026 Zylst Inc. Reach the Zenith of Satisfaction.</p>
+                </footer>
 
-                <section id="features">
-                    <h2>Engineered for Celebration</h2>
-
-                    <article>
-                        <h3>🎡 The Lucky Wheel</h3>
-                        <p>Can't decide which gift to pick? Let fate take the lead. Friends can spin the wheel to
-                            randomly select a gift from your "Top Tier" wishes.</p>
-                    </article>
-
-                    <article>
-                        <h3>💌 Blessings Board</h3>
-                        <p>More than just a box. A dedicated digital space for friends to leave notes, videos, and "Open
-                            Me" messages that unlock on your big day.</p>
-                    </article>
-
-                    <article>
-                        <h3>🕵️ Secret Santa Mode</h3>
-                        <p>Organize group exchanges with zero stress. Automated drawings, anonymous chats, and
-                            guaranteed gift success.</p>
-                    </article>
-
-                    <article>
-                        <h3>📸 Proof of Joy</h3>
-                        <p>Scan the Gift QR code at the handover to instantly share a "Thank You" photo with the giver
-                            and unlock your Blessings Board.</p>
-                    </article>
-                </section>
-
-                <hr/>
-
-                <section id="final-cta">
-                    <h2>Ready to reach the Zenith?</h2>
-                    <p>Join our exclusive community of gift-givers and get your Early Bird "Celestial" Badge.</p>
-
-                    <form action="#" method="POST">
-                        <input type="email" name="email_final" placeholder="you@example.com" required/>
-                        <button type="submit">Try Zylst Now</button>
-                    </form>
-                </section>
-
-            </main>
-
-            <footer>
-                <p>&copy; 2026 Zylst Inc. Built for better gifting.</p>
-                <ul>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">TikTok</a></li>
-                </ul>
-            </footer>
-            <Button radius="md" as={Link}
-                    href="/wishlists">
-                Try Zylst Now
-            </Button>
+            </div>
         </HeroUIProvider>
-
     )
 
 }
