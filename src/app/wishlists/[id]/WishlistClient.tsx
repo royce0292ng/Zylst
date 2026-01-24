@@ -1,13 +1,8 @@
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import type { Wishlist } from '@/types/wishlist';
-import {
-    updateWishlist,
-    addItem,
-    toggleItem,
-    deleteItem,
-} from '@/app/actions/whislist';
+import { updateWishlist, addItem, toggleItem, deleteItem } from '@/app/actions/whislist';
 import {
     Pencil,
     Trash2,
@@ -20,8 +15,8 @@ import {
     ChevronDown,
     ChevronUp,
 } from 'lucide-react';
-import {Card, HeroUIProvider, CardBody, DatePicker, CalendarDate, Button, Input} from "@heroui/react";
-import {getLocalTimeZone, parseAbsoluteToLocal, parseDate, toCalendarDate} from "@internationalized/date";
+import { Card, HeroUIProvider, CardBody, DatePicker, CalendarDate, Button, Input } from "@heroui/react";
+import { parseAbsoluteToLocal, toCalendarDate } from "@internationalized/date";
 
 export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishlist }) {
     const [wishlist, setWishlist] = useState(initialWishlist);
@@ -32,19 +27,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
     const [isEditingDate, setIsEditingDate] = useState(false);
     const [tempDate, setTempDate] = useState<CalendarDate | null>(null);
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
-    const [animateStats, setAnimateStats] = useState({ total: false, done: false, left: false });
-
-    const totalItems = wishlist.items.length;
-    const completedItems = wishlist.items.filter((item) => item.completed).length;
-    const remainingItems = wishlist.items.filter((item) => !item.completed).length;
-
-    useEffect(() => {
-        setAnimateStats({ total: true, done: true, left: true });
-        const timer = setTimeout(() => {
-            setAnimateStats({ total: false, done: false, left: false });
-        }, 400);
-        return () => clearTimeout(timer);
-    }, [totalItems, completedItems, remainingItems]);
 
     const handleNameChange = async (name: string) => {
         startTransition(async () => {
@@ -302,7 +284,7 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
                                         <Button
                                             isIconOnly
                                             onPress={() => handleToggleItem(item.id) }
-                                            className={"flex-shrink-0 transition-all duration-200 bg-transparent "}
+                                            className={"shrink-0 transition-all duration-200 bg-transparent "}
                                         >
                                             {!item.completed ? (
                                                 <Circle
@@ -353,7 +335,7 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
                                         <Button
                                             isIconOnly
                                             onPress={() => handleDeleteItem(item.id)}
-                                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 flex-shrink-0 bg-transparent"
+                                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0 bg-transparent"
                                             title="Delete item"
                                         >
                                             <Trash2 className="w-4 h-4" />
