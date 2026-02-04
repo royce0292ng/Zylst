@@ -27,6 +27,20 @@
   }
 }
 
+@keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -5%); }
+    30% { transform: translate(5%, -10%); }
+    50% { transform: translate(-10%, 5%); }
+    70% { transform: translate(10%, 10%); }
+    90% { transform: translate(-5%, 5%); }
+}
+
+.bg-grain {
+    /* An actual noise SVG used by top-tier SaaS sites */
+    animation: grain 8s steps(10) infinite;
+}
+
 @keyframes drawCheck {
     from { stroke-dashoffset: 100; }
     to   { stroke-dashoffset: 0; }
