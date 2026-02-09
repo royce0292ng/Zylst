@@ -1,6 +1,6 @@
 import {redirect} from "next/navigation";
 import prisma from "@/lib/prisma";
-import {Prisma} from "@prisma/client";
+import {Prisma} from "../../../generated/prisma/client";
 
 export default async function WishlistsPage(){
     let wishlist = null;

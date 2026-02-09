@@ -1,21 +1,19 @@
 'use server';
 
-import prisma  from '@/lib/prisma';
-import { revalidatePath } from 'next/cache';
-import type { CreateItemInput, UpdateWishlistInput } from '@/types/wishlist';
+import prisma from '@/lib/prisma';
+import {revalidatePath} from 'next/cache';
+import type {CreateItemInput, UpdateWishlistInput} from '@/types/wishlist';
 
 // Get wishlist by ID
 export async function getWishlist(id: string) {
-    const wishlist = await prisma.wishlist.findUnique({
-        where: { id },
+    return prisma.wishlist.findUnique({
+        where: {id},
         include: {
             items: {
-                orderBy: { position: 'asc' },
+                orderBy: {position: 'asc'},
             },
         },
     });
-
-    return wishlist;
 }
 
 // Update wishlist details
