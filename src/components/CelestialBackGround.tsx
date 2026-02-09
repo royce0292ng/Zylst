@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 
-export const CelestialBackground = () => {
+const CelestialBackground = () => {
     return (
         <div className="fixed inset-0 z-0 bg-[#020617] overflow-hidden">
             {/* The Grain Overlay - Kills Pixelation */}
@@ -52,3 +52,5 @@ export const CelestialBackground = () => {
         </div>
     );
 };
+
+export default CelestialBackground;

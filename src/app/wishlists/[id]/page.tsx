@@ -1,5 +1,5 @@
 // src/app/wishlists/[id]/page.tsx
-import { getWishlist } from '../../actions/whislist';
+import { getWishlist } from '../../actions/wishlist';
 import { WishlistClient } from './WishlistClient';
 import { notFound } from 'next/navigation';
 

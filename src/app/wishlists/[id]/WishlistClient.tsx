@@ -2,18 +2,13 @@
 
 import { useState, useTransition } from 'react';
 import type { Wishlist } from '@/types/wishlist';
-import { updateWishlist, addItem, toggleItem, deleteItem } from '@/app/actions/whislist';
+import { updateWishlist, addItem, toggleItem, deleteItem } from '@/app/actions/wishlist';
 import {
     Pencil,
     Trash2,
     Calendar,
     Circle,
     CircleCheckBig,
-    ExternalLink,
-    DollarSign,
-    Tag,
-    ChevronDown,
-    ChevronUp,
 } from 'lucide-react';
 import { Card, HeroUIProvider, CardBody, DatePicker, CalendarDate, Button, Input } from "@heroui/react";
 import { parseAbsoluteToLocal, toCalendarDate } from "@internationalized/date";
