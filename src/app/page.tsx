@@ -47,7 +47,7 @@ export default function ZylstLanding() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={{ delay: 0.5, duration: 0.3 }}
                     className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] md:text-xs font-medium mb-6 animate-pulse"
                 >
                     <Sparkles size={14} /> <span>Redefining the Gifting Experience</span>
@@ -56,7 +56,7 @@ export default function ZylstLanding() {
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.8 }}
+                    transition={{ delay: 0.1, duration: 0.8 }}
                     className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight mb-6 leading-[1.1] md:leading-[0.9]"
                 >
                     Stop Guessing. <br />
@@ -68,13 +68,17 @@ export default function ZylstLanding() {
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 1 }}
+                    transition={{ delay: 0.5, duration: 1 }}
                     className="text-slate-400 text-base md:text-xl max-w-2xl mb-10 leading-relaxed px-4"
                 >
                     The wishlist platform where your deepest desires meet their perfect match—without spoiling the surprise.
                 </motion.p>
 
-                <div className="flex flex-col items-center gap-2 mb-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, ease: "easeInOut" }}
+                    className="flex flex-col items-center gap-2 mb-8">
                     <div className="flex -space-x-2">
                         {/* Optional: Add small avatar circles here for effect */}
                         {[1, 2, 3].map((i) => (
@@ -86,10 +90,10 @@ export default function ZylstLanding() {
 
                     <p className="text-sm text-slate-400 font-medium">
                         Join <span className="text-blue-400 font-bold">
-      <RollingCounter target={totalWaitlist} />+
-    </span> others reaching the Zenith.
+                      <RollingCounter target={totalWaitlist} />+
+                    </span> others reaching the Zenith.
                     </p>
-                </div>
+                </motion.div>
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
