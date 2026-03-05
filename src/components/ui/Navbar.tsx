@@ -2,7 +2,7 @@
 
 
 
-import {useState} from "react";
+import { useState } from "react";
 import {
     Button,
     Link,
@@ -12,15 +12,18 @@ import {
     NavbarItem,
     NavbarMenu,
     NavbarMenuItem,
-    NavbarMenuToggle
+    NavbarMenuToggle,
+    useDisclosure
 } from "@heroui/react";
+import LoginDrawer from "@/components/ui/LoginDrawer";
 
 export default function Navbar() {
 
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuItems = ["How it Works", "Features", "Secret Santa", "Pricing"];
 
-    return(
+    return (
         <HerouiNavbar
             onMenuOpenChange={setIsMenuOpen}
             isBordered
@@ -52,7 +55,14 @@ export default function Navbar() {
 
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button variant="flat" size="sm" className="text-white bg-white/10 hover:bg-white/20">Login</Button>
+                    <Button
+                        variant="flat"
+                        size="sm"
+                        className="text-white bg-white/10 hover:bg-white/20"
+                        onPress={onOpen}
+                    >
+                        Login
+                    </Button>
                 </NavbarItem>
             </NavbarContent>
 
@@ -67,6 +77,7 @@ export default function Navbar() {
                 ))}
                 <Button color="primary" className="mt-4 font-bold">Try Zylst Now</Button>
             </NavbarMenu>
+            <LoginDrawer isOpen={isOpen} onOpenChange={onOpenChange} />
         </HerouiNavbar>
     );
 }

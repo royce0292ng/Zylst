@@ -1,4 +1,13 @@
 -- CreateTable
+CREATE TABLE "Waitlist" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Waitlist_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Wishlist" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -29,6 +38,9 @@ CREATE TABLE "Item" (
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Waitlist_email_key" ON "Waitlist"("email");
 
 -- CreateIndex
 CREATE INDEX "Item_wishlistId_idx" ON "Item"("wishlistId");
