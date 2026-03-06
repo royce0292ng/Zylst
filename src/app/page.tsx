@@ -5,16 +5,16 @@ import { motion } from "framer-motion"; // Import motion
 import { Camera, Gift, Sparkles, Target, Users } from "lucide-react";
 import Navbar from "@/components/ui/Navbar";
 import CelestialBackground from "@/components/CelestialBackGround";
-import JoinWaitingList, {RollingCounter} from "@/components/JoinWaitingList";
+import JoinWaitingList, { RollingCounter } from "@/components/JoinWaitingList";
 import { Footer } from "@/components/ui/Footer";
-import {getWaitlistCount} from "@/app/actions/waitlist";
-import {useEffect, useState} from "react";
+import { getWaitlistCount } from "@/app/actions/waitlist";
+import { useEffect, useState } from "react";
 
 // Animation Variants
 const fadeInUp = {
-    hidden: { opacity: 0, y: 40, transition: { type: "spring", damping: 20, stiffness: 100 }},
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-};
+    hidden: { opacity: 0, y: 40, transition: { type: "spring", damping: 20, stiffness: 100 } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } }
+} as const;
 
 
 const staggerContainer = {
@@ -23,7 +23,7 @@ const staggerContainer = {
         opacity: 1,
         transition: { staggerChildren: 0.2 }
     }
-};
+} as const;
 
 export default function ZylstLanding() {
 
@@ -90,8 +90,8 @@ export default function ZylstLanding() {
 
                     <p className="text-sm text-slate-400 font-medium">
                         Join <span className="text-blue-400 font-bold">
-                      <RollingCounter target={totalWaitlist} />+
-                    </span> others reaching the Zenith.
+                            <RollingCounter target={totalWaitlist} />+
+                        </span> others reaching the Zenith.
                     </p>
                 </motion.div>
 
@@ -187,7 +187,7 @@ export default function ZylstLanding() {
                                     <div className="text-center p-8">
                                         <motion.div
                                             animate={{ rotate: [-15, 15] }}
-                                            transition={{ duration: 2 , repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                                            transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
                                             className="mb-4 inline-block"
                                         >
                                             <Sparkles className="text-blue-500 opacity-50" size={40} />

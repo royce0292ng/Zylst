@@ -48,3 +48,14 @@ model Item {
 
   @@index([wishlistId])
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  username  String   @unique
+  interests String[] @default([])
+  source    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import CelestialBackground from "@/components/CelestialBackGround";
 import { useRouter } from "next/navigation";
+import { signup } from "@/app/actions/auth";
 
 const steps = [
     { id: 1, title: "Identity", icon: <User size={18} /> },
@@ -46,6 +47,7 @@ const marketingSources = [
 export default function SignupPage() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         email: "",
         password: "",
@@ -100,9 +102,25 @@ export default function SignupPage() {
         }
     };
 
-    const handleComplete = () => {
-        // Here you would typically call a server action
-        router.push("/");
+    const handleComplete = async () => {
+        setIsSubmitting(true);
+        try {
+            const result = await signup({
+                ...formData,
+                interests: Array.from(formData.interests),
+            });
+
+            if (result.success) {
+                router.push("/wishlists");
+                router.refresh();
+            } else {
+                setErrors({ submit: result.error });
+            }
+        } catch (error) {
+            setErrors({ submit: "The stars have misaligned." });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const variants = {
@@ -314,6 +332,15 @@ export default function SignupPage() {
                                                 <h3 className="text-3xl font-black italic">ASCENSION COMPLETE</h3>
                                                 <p className="text-slate-200 max-w-xs mx-auto">Welcome to the Zenith. Your account is ready for exploration.</p>
                                             </div>
+                                            {errors.submit && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium"
+                                                >
+                                                    {errors.submit}
+                                                </motion.div>
+                                            )}
                                         </div>
                                     )}
 
@@ -325,6 +352,7 @@ export default function SignupPage() {
                                                 className="text-slate-200 font-bold"
                                                 startContent={<ChevronLeft size={18} />}
                                                 onPress={prevStep}
+                                                isDisabled={isSubmitting}
                                             >
                                                 Back
                                             </Button>
@@ -336,6 +364,8 @@ export default function SignupPage() {
                                                 }`}
                                             endContent={currentStep < 4 ? <ChevronRight size={18} /> : null}
                                             onPress={currentStep === 4 ? handleComplete : nextStep}
+                                            isLoading={isSubmitting}
+                                            isDisabled={isSubmitting}
                                         >
                                             {currentStep === 1 ? "Begin Ascension" :
                                                 currentStep < 3 ? "Continue" :

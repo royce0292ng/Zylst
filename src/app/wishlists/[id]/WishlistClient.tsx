@@ -9,9 +9,17 @@ import {
     Calendar,
     Circle,
     CircleCheckBig,
+    Plus,
+    Clock,
+    CheckCircle2,
+    ChevronRight,
+    ShoppingBag,
+    Tag,
+    Gift,
 } from 'lucide-react';
-import { Card, HeroUIProvider, CardBody, DatePicker, CalendarDate, Button, Input } from "@heroui/react";
+import { Card, CardBody, DatePicker, CalendarDate, Button, Input, Progress, Chip } from "@heroui/react";
 import { parseAbsoluteToLocal, toCalendarDate } from "@internationalized/date";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishlist }) {
     const [wishlist, setWishlist] = useState(initialWishlist);
@@ -21,7 +29,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
     const [tempName, setTempName] = useState('');
     const [isEditingDate, setIsEditingDate] = useState(false);
     const [tempDate, setTempDate] = useState<CalendarDate | null>(null);
-    const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
     const handleNameChange = async (name: string) => {
         startTransition(async () => {
@@ -43,7 +50,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
         const text = newItem;
         setNewItem('');
 
-        // Optimistic update
         const tempItem = {
             id: `temp-${Date.now()}`,
             text,
@@ -77,7 +83,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
     };
 
     const handleToggleItem = async (itemId: string) => {
-        // Optimistic update
         setWishlist((prev) => ({
             ...prev,
             items: prev.items.map((item) =>
@@ -91,7 +96,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
     };
 
     const handleDeleteItem = async (itemId: string) => {
-        // Optimistic update
         setWishlist((prev) => ({
             ...prev,
             items: prev.items.filter((item) => item.id !== itemId),
@@ -99,18 +103,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
 
         startTransition(async () => {
             await deleteItem(wishlist.id, itemId);
-        });
-    };
-
-    const toggleExpand = (id: string) => {
-        setExpandedItems((prev) => {
-            const newSet = new Set(prev);
-            if (newSet.has(id)) {
-                newSet.delete(id);
-            } else {
-                newSet.add(id);
-            }
-            return newSet;
         });
     };
 
@@ -133,7 +125,6 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
 
     const saveDate = async () => {
         if (tempDate) {
-            console.log(tempDate);
             await handleDateChange(tempDate.toString());
         }
         setIsEditingDate(false);
@@ -142,9 +133,9 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
     const formatDate = (dateString: Date | string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
-            weekday: 'short',
+            weekday: 'long',
             year: 'numeric',
-            month: 'short',
+            month: 'long',
             day: 'numeric',
         });
     };
@@ -158,266 +149,270 @@ export function WishlistClient({ wishlist: initialWishlist }: { wishlist: Wishli
         return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     };
 
-    const getPriorityColor = (priority?: string | null) => {
-        switch (priority) {
-            case 'high':
-                return 'text-red-600 bg-red-50';
-            case 'medium':
-                return 'text-amber-600 bg-amber-50';
-            case 'low':
-                return 'text-green-600 bg-green-50';
-            default:
-                return 'text-zinc-600 bg-zinc-50';
-        }
-    };
-
     const daysUntil = getDaysUntil(wishlist.eventDate);
+    const completedCount = wishlist.items.filter(i => i.completed).length;
+    const totalCount = wishlist.items.length;
+    const progressValue = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
     return (
-        <HeroUIProvider>
-            <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-                <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-                    <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-                        {/* Header */}
-                        <h1 className="text-2xl font-bold text-black"> Zylst </h1>
+        <div className="flex min-h-[calc(100vh-64px)] justify-center bg-zinc-950 font-sans p-4 md:p-8">
+            <div className="w-full max-w-4xl space-y-8">
+                {/* Header Section */}
+                <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                            <Chip
+                                variant="flat"
+                                size="sm"
+                                className="bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                startContent={<Gift size={12} />}
+                            >
+                                Wishlist
+                            </Chip>
+                            {daysUntil >= 0 && (
+                                <Chip
+                                    variant="flat"
+                                    size="sm"
+                                    className="bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                                >
+                                    {daysUntil === 0 ? "Happening Today" : `${daysUntil} days remaining`}
+                                </Chip>
+                            )}
+                        </div>
 
-                        {/* Event Name */}
-                        <div className="flex items-center gap-2">
+                        <div className="group flex items-center gap-4">
                             {isEditingName ? (
-                                <input
-                                    type="text"
+                                <Input
+                                    variant="underlined"
                                     value={tempName}
                                     onChange={(e) => setTempName(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && saveName()}
                                     onBlur={saveName}
-                                    className="px-3 py-1 border border-zinc-300 rounded font-medium text-zinc-950 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="text-4xl md:text-5xl font-bold max-w-lg"
                                     autoFocus
+                                    classNames={{
+                                        input: "text-4xl md:text-5xl font-bold text-white",
+                                    }}
                                 />
                             ) : (
                                 <>
-                                    <h2 className="font-medium text-zinc-950 dark:text-zinc-50">
+                                    <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
                                         {wishlist.name}
-                                    </h2>
-                                    <button
-                                        onClick={startEditingName}
-                                        className="p-1 hover:bg-zinc-100 rounded transition-colors"
-                                        title="Edit event name"
+                                    </h1>
+                                    <Button
+                                        isIconOnly
+                                        variant="light"
+                                        size="sm"
+                                        onPress={startEditingName}
+                                        className="text-zinc-500 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
                                     >
-                                        <Pencil className="w-4 h-4 text-zinc-600" />
-                                    </button>
+                                        <Pencil className="w-5 h-5" />
+                                    </Button>
                                 </>
                             )}
                         </div>
 
-                        {/* Event Date */}
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 text-zinc-400 group h-8">
                             {isEditingDate ? (
-                                <DatePicker className="max-w-[284px]"
-                                            label="Event date"
-                                            onBlur={saveDate}
-                                            onChange={(e) => setTempDate(e)}
-                                            onKeyDown={(e) => e.key === 'Enter' && saveDate()}
-                                            value={tempDate} />
+                                <DatePicker
+                                    size="sm"
+                                    variant="underlined"
+                                    onBlur={saveDate}
+                                    onChange={(e) => setTempDate(e)}
+                                    onKeyDown={(e) => e.key === 'Enter' && saveDate()}
+                                    value={tempDate}
+                                    className="max-w-[200px]"
+                                />
                             ) : (
                                 <>
-                                    <Calendar className="w-4 h-4 text-zinc-600" />
-                                    <span className="text-zinc-600">{formatDate(wishlist.eventDate)}</span>
-                                    <button
-                                        onClick={startEditingDate}
-                                        className="p-1 hover:bg-zinc-100 rounded transition-colors"
-                                        title="Edit event date"
+                                    <Calendar className="w-4 h-4" />
+                                    <span className="text-sm font-medium">{formatDate(wishlist.eventDate)}</span>
+                                    <Button
+                                        isIconOnly
+                                        variant="light"
+                                        size="sm"
+                                        onPress={startEditingDate}
+                                        className="text-zinc-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100"
                                     >
-                                        <Pencil className="w-3 h-3 text-zinc-600 " />
-                                    </button>
-                                    {daysUntil >= 0 && (
-                                        <span className="ml-2 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-full">
-                                            {daysUntil === 0 ? "Today!" : daysUntil === 1 ? "Tomorrow" : `${daysUntil} days`}
-                                        </span>
-                                    )}
-                                    {daysUntil < 0 && (
-                                        <span className="ml-2 px-2 py-0.5 bg-zinc-100 text-zinc-500 text-xs font-medium rounded-full">
-                                        Past event
-                                    </span>
-                                    )}
+                                        <Pencil className="w-3 h-3" />
+                                    </Button>
                                 </>
                             )}
                         </div>
+                    </div>
 
-                        {/* Stats */}
-                        <div className="flex gap-4">
-                            <Card>                            <CardBody className={"text-center"}>
-                                <p className="text-small text-default-500 font-medium">Total Wish</p>
-                                <p key={`total-${wishlist.items.length}`} className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.length}</p>
-                            </CardBody>                        </Card>                        <Card>                            <CardBody className={"text-center"}>
-                            <p className="text-small text-default-500 font-medium">Claimed</p>
-                            <p key={`done-${wishlist.items.filter((item) => item.completed).length}`}
-                               className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.filter((item) => item.completed).length}</p>
-                        </CardBody>                        </Card>                        <Card>                            <CardBody className={"text-center"}>
-                            <p className="text-small text-default-500 font-medium">Remaining</p>
-                            <p key={`left-${wishlist.items.filter((item) => !item.completed).length}`}
-                               className="text-default-700 text-2xl font-semibold stat-number">{wishlist.items.filter((item) => !item.completed).length}</p>
-                        </CardBody>                        </Card>                    </div>
+                    <div className="bg-zinc-900/50 backdrop-blur-sm border border-white/5 rounded-2xl p-6 min-w-[240px]">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Completion</span>
+                            <span className="text-sm font-bold text-white">{Math.round(progressValue)}%</span>
+                        </div>
+                        <Progress
+                            value={progressValue}
+                            className="h-2"
+                            color="primary"
+                            classNames={{
+                                indicator: "bg-gradient-to-r from-blue-500 to-indigo-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                            }}
+                        />
+                        <div className="mt-4 flex gap-4">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-zinc-500 uppercase font-bold">Claimed</span>
+                                <span className="text-xl font-bold text-white">{completedCount}</span>
+                            </div>
+                            <div className="w-px h-8 bg-white/5" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-zinc-500 uppercase font-bold">Total</span>
+                                <span className="text-xl font-bold text-white">{totalCount}</span>
+                            </div>
+                        </div>
+                    </div>
+                </header>
 
-                        {/* Items List */}
-                        <div className="max-w-screen space-y-2 px-4">
-                            {wishlist.items.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <p className="text-zinc-400 text-lg">No items yet</p>
-                                    <p className="text-zinc-300 text-sm mt-2">Add your first item below</p>
-                                </div>
-                            ) : (
-                                wishlist.items.map((item) => {
-                                    const isExpanded = expandedItems.has(item.id);
-                                    const hasDetails =
-                                        item.link || item.description || item.price || item.category || item.tags?.length;
-
-                                    return (
-                                    <div
-                                        key={item.id}
-                                        className="group flex items-center gap-3 p-4 bg-zinc-50 hover:bg-zinc-100 rounded-xl transition-all duration-200 hover:shadow-md"
-                                    >
-                                        <Button
-                                            isIconOnly
-                                            onPress={() => handleToggleItem(item.id) }
-                                            className={"shrink-0 transition-all duration-200 bg-transparent "}
-                                        >
-                                            {!item.completed ? (
-                                                <Circle
-                                                    className="w-5 h-5 text-zinc-500"
-                                                    strokeWidth={2}
-                                                />
-                                            ) : (
-                                                <CircleCheckBig
-                                                    className="w-5 h-5 text-zinc-500"
-                                                    strokeWidth={2}
-                                                    style={{
-                                                        strokeDasharray: 100,
-                                                        strokeDashoffset: 0,
-                                                        animation: "drawCheck 0.5s ease-out"
-                                                    }}
-                                                />
-                                            )}
-                                        </Button>
-
-                                        <span
-                                            className={`flex-1 text-zinc-800 transition-all duration-200 truncate 
-                                                ${item.completed
-                                                    ? "line-through text-zinc-400"
-                                                    : ""
-                                                }
-                                            `}
-                                        >
-                                        {item.text}
-                                        </span>
-
-                                        {/*{item.priority && (*/}
-                                        {/*    <span className={`text-xs px-1.5 py-0.5 rounded ${getPriorityColor(item.priority)}`}>*/}
-                                        {/*                      {item.priority}*/}
-                                        {/*                    </span>*/}
-                                        {/*)}*/}
-
-                                        {/*{item.price && (*/}
-                                        {/*    <span className="text-xs text-zinc-600 flex items-center gap-1">*/}
-                                        {/*                        <DollarSign className="w-3 h-3" />*/}
-                                        {/*        {item.price.toFixed(2)} {item.currency}*/}
-                                        {/*                    </span>*/}
-                                        {/*)}*/}
-
-                                        {/*{item.category && (*/}
-                                        {/*    <span className="text-xs text-zinc-500 mt-1 block">{item.category}</span>*/}
-                                        {/*)}*/}
-
-                                        <Button
-                                            isIconOnly
-                                            onPress={() => handleDeleteItem(item.id)}
-                                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0 bg-transparent"
-                                            title="Delete item"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </Button>
-
-                                        {/*{hasDetails && (*/}
-                                        {/*    <button*/}
-                                        {/*        onClick={() => toggleExpand(item.id)}*/}
-                                        {/*        className="p-1.5 sm:p-2 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200 flex-shrink-0"*/}
-                                        {/*    >*/}
-                                        {/*        {isExpanded ? (*/}
-                                        {/*            <ChevronUp className="w-4 h-4" />*/}
-                                        {/*        ) : (*/}
-                                        {/*            <ChevronDown className="w-4 h-4" />*/}
-                                        {/*        )}*/}
-                                        {/*    </button>*/}
-                                        {/*)}*/}
-
-                                        {/*/!* Expanded Details *!/*/}
-                                        {/*{isExpanded && hasDetails && (*/}
-                                        {/*    <div className="px-3 sm:px-4 pb-3 sm:pb-4 pt-0 space-y-2 border-t border-zinc-200">*/}
-                                        {/*        {item.description && <p className="text-sm text-zinc-600">{item.description}</p>}*/}
-
-                                        {/*        {item.link && (*/}
-                                        {/*            <a*/}
-                                        {/*                href={item.link}*/}
-                                        {/*                target="_blank"*/}
-                                        {/*                rel="noopener noreferrer"*/}
-                                        {/*                className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1"*/}
-                                        {/*            >*/}
-                                        {/*                <ExternalLink className="w-3 h-3" />*/}
-                                        {/*                View link*/}
-                                        {/*            </a>*/}
-                                        {/*        )}*/}
-
-                                        {/*        {item.tags && item.tags.length > 0 && (*/}
-                                        {/*            <div className="flex items-center gap-2 flex-wrap">*/}
-                                        {/*                <Tag className="w-3 h-3 text-zinc-400" />*/}
-                                        {/*                {item.tags.map((tag, idx) => (*/}
-                                        {/*                    <span*/}
-                                        {/*                        key={idx}*/}
-                                        {/*                        className="text-xs px-2 py-0.5 bg-zinc-200 text-zinc-700 rounded"*/}
-                                        {/*                    >*/}
-                                        {/*                            {tag}*/}
-                                        {/*                        </span>*/}
-                                        {/*                ))}*/}
-                                        {/*            </div>*/}
-                                        {/*        )}*/}
-                                        {/*    </div>*/}
-                                        {/*)}*/}
-
-                                    </div>
-                                    );
-                                })
-                            )}
+                {/* Main Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Items Column */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                <ShoppingBag size={20} className="text-blue-400" />
+                                Gift Items
+                            </h3>
+                            <span className="text-xs text-zinc-500 font-medium">{totalCount - completedCount} items remaining</span>
                         </div>
 
-                        {/* Add Item */}
-                        {newItem ? (
-                            <div className="flex gap-2">
-                                <Input
-                                    type="text"
-                                    placeholder="Add new item..."
-                                    value={newItem}
-                                    onChange={(e) => setNewItem(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleAddItem();
-                                        if (e.key === 'Escape') setNewItem('');
-                                    }}
-                                    onBlur={() => {
-                                        if (newItem.trim()) handleAddItem();
-                                        else setNewItem('');
-                                    }}
-                                    className="flex-1 px-4 py-3 rounded-xl "
-                                />
-                            </div>
-                        ) : (
-                            <Button color="primary" variant="ghost" onPress={() => setNewItem(" ")} isDisabled={isPending}>
-                                + Add new item
-                            </Button>
-                        )}
+                        <div className="space-y-3">
+                            <AnimatePresence mode="popLayout">
+                                {wishlist.items.map((item) => (
+                                    <motion.div
+                                        key={item.id}
+                                        layout
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <Card className={`bg-zinc-900/40 border-white/5 hover:border-white/10 transition-all duration-300 ${item.completed ? "opacity-60" : ""}`}>
+                                            <CardBody className="p-4 flex flex-row items-center gap-4">
+                                                <Button
+                                                    isIconOnly
+                                                    variant="light"
+                                                    onPress={() => handleToggleItem(item.id)}
+                                                    className={`shrink-0 ${item.completed ? "text-green-400" : "text-zinc-600 hover:text-white"}`}
+                                                >
+                                                    {item.completed ? (
+                                                        <CheckCircle2 className="w-6 h-6" />
+                                                    ) : (
+                                                        <Circle className="w-6 h-6" />
+                                                    )}
+                                                </Button>
 
-                        {/*Saving Text*/}
-                        {/*{isPending && <div className="mt-2 text-center text-sm text-zinc-500">Saving...</div>}*/}
+                                                <div className="flex-1 min-w-0">
+                                                    <span className={`text-base font-medium transition-all duration-300 block truncate ${item.completed ? "line-through text-zinc-500" : "text-white"}`}>
+                                                        {item.text}
+                                                    </span>
+                                                    {item.priority && (
+                                                        <div className="flex gap-2 mt-1">
+                                                            <Chip size="sm" variant="dot" color={item.priority === 'high' ? 'danger' : item.priority === 'medium' ? 'warning' : 'success'} className="border-none p-0 text-[10px]">
+                                                                {item.priority}
+                                                            </Chip>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <Button
+                                                    isIconOnly
+                                                    variant="light"
+                                                    size="sm"
+                                                    onPress={() => handleDeleteItem(item.id)}
+                                                    className="opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-zinc-600 hover:text-red-400 hover:bg-red-400/10"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+
+                                                <ChevronRight className="w-4 h-4 text-zinc-700 shrink-0" />
+                                            </CardBody>
+                                        </Card>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+
+                            {/* Add Item Bar */}
+                            <div className="pt-4">
+                                <div className="relative group">
+                                    <Input
+                                        placeholder="I'm wishing for..."
+                                        value={newItem}
+                                        onChange={(e) => setNewItem(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+                                        className="w-full"
+                                        classNames={{
+                                            input: "text-white py-6",
+                                            inputWrapper: "bg-zinc-900/60 border-white/10 hover:border-blue-500/50 group-focus-within:border-blue-500 transition-all rounded-2xl h-14"
+                                        }}
+                                        endContent={
+                                            <Button
+                                                isIconOnly
+                                                size="sm"
+                                                onPress={handleAddItem}
+                                                className="bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+                                            >
+                                                <Plus size={18} />
+                                            </Button>
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </main>
+
+                    {/* Sidebar/Activity/Details Column */}
+                    <div className="space-y-6">
+                        <section className="bg-zinc-900/40 border border-white/5 rounded-2xl p-6 space-y-4">
+                            <h3 className="text-sm font-bold text-white flex items-center gap-2 uppercase tracking-widest">
+                                <Clock size={16} className="text-zinc-500" />
+                                Recent Activity
+                            </h3>
+                            <div className="space-y-4">
+                                {wishlist.items.slice(0, 3).map((item, idx) => (
+                                    <div key={idx} className="flex gap-3 text-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                                        <p className="text-zinc-400 leading-relaxed">
+                                            <span className="text-zinc-200 font-medium">New item </span>
+                                            "{item.text}" was added to the list.
+                                        </p>
+                                    </div>
+                                ))}
+                                {wishlist.items.length === 0 && (
+                                    <p className="text-xs text-zinc-600 italic">No activity yet. Start adding items!</p>
+                                )}
+                            </div>
+                        </section>
+
+                        <section className="bg-zinc-900/40 border border-white/10 rounded-2xl p-6 border-dashed">
+                            <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+                                <Tag size={16} className="text-zinc-500" />
+                                Share & Invite
+                            </h3>
+                            <p className="text-xs text-zinc-500 mb-4 line-clamp-2">
+                                Share this wishlist with friends and family so they know exactly what you want!
+                            </p>
+                            <Button className="w-full bg-white/5 hover:bg-white/10 text-white border border-white/10" variant="flat">
+                                Copy List Link
+                            </Button>
+                        </section>
+                    </div>
+                </div>
             </div>
-        </HeroUIProvider>
-        );
+
+            <style jsx global>{`
+                @keyframes drawCheck {
+                    from { stroke-dashoffset: 100; }
+                    to { stroke-dashoffset: 0; }
+                }
+                .dark {
+                    color-scheme: dark;
+                }
+            `}</style>
+        </div>
+    );
 }

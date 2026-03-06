@@ -1,7 +1,8 @@
 // src/app/wishlists/[id]/page.tsx
 import { getWishlist } from '../../actions/wishlist';
 import { WishlistClient } from './WishlistClient';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
+import { cookies } from "next/headers";
 
 interface PageProps {
     params: Promise<{
@@ -10,6 +11,10 @@ interface PageProps {
 }
 
 export default async function WishlistPage({ params }: PageProps) {
+    const session = (await cookies()).get("session");
+    if (!session) {
+        redirect("/?auth=login");
+    }
     // Await the params Promise
     const resolvedParams = await params;
     const { id } = resolvedParams;

@@ -1,8 +1,14 @@
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import {Prisma} from "../../../generated/prisma/client";
+import { Prisma } from "../../../generated/prisma/client";
+import { cookies } from "next/headers";
 
-export default async function WishlistsPage(){
+export default async function WishlistsPage() {
+    const session = (await cookies()).get("session");
+    if (!session) {
+        redirect("/?auth=login");
+    }
+
     let wishlist = null;
     let errorMsg = "";
 
