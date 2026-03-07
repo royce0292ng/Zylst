@@ -2,6 +2,7 @@
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import type { CreateItemInput, UpdateWishlistInput } from '@/types/wishlist';
 
 // Get all wishlists
@@ -14,8 +15,21 @@ export async function getWishlists() {
     });
 }
 
+// Create new wishlist
+export async function createWishlist(name: string, eventDate: string) {
+    const wishlist = await prisma.wishlist.create({
+        data: {
+            name,
+            eventDate: new Date(eventDate),
+        },
+    });
+
+    revalidatePath('/wishlists');
+    return wishlist;
+}
+
 // Get wishlist by ID
-export async function getWishlist(id: string) {
+export async function getWishlist(id: string, userEmail?: string | null) {
     return prisma.wishlist.findUnique({
         where: { id },
         include: {

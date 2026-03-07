@@ -20,13 +20,16 @@ export default function WishlistLayout({
             setUserEmail(session);
         };
         fetchSession();
+
+        window.addEventListener('auth-change', fetchSession);
+        return () => window.removeEventListener('auth-change', fetchSession);
     }, []);
 
     return (
         <HeroUIProvider>
             <div className="dark text-foreground bg-background min-h-screen">
                 <WishlistNavbar userEmail={userEmail} onSidebarToggle={onOpen} />
-                <WishlistSidebar isOpen={isOpen} onOpenChange={onOpenChange} />
+                {userEmail && <WishlistSidebar isOpen={isOpen} onOpenChange={onOpenChange} />}
                 <div className="pt-16">
                     {children}
                 </div>

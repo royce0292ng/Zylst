@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+'use client';
+
+import { useEffect, useState, Suspense } from "react";
 import {
     Button,
     Link,
@@ -20,7 +22,7 @@ import { getSession, logout } from "@/app/actions/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { User, Settings, LogOut, Gift } from "lucide-react";
 
-export default function Navbar() {
+function NavbarInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -160,5 +162,13 @@ export default function Navbar() {
             </NavbarMenu>
             <LoginDrawer isOpen={isOpen} onOpenChange={onOpenChange} />
         </HerouiNavbar>
+    );
+}
+
+export default function Navbar() {
+    return (
+        <Suspense fallback={<div className="h-16 bg-black/40 backdrop-blur-md border-b border-white/10" />}>
+            <NavbarInner />
+        </Suspense>
     );
 }

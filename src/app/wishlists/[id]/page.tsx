@@ -12,9 +12,7 @@ interface PageProps {
 
 export default async function WishlistPage({ params }: PageProps) {
     const session = (await cookies()).get("session");
-    if (!session) {
-        redirect("/?auth=login");
-    }
+    const userEmail = session?.value || null;
     // Await the params Promise
     const resolvedParams = await params;
     const { id } = resolvedParams;
@@ -26,12 +24,12 @@ export default async function WishlistPage({ params }: PageProps) {
         notFound();
     }
 
-    const wishlist = await getWishlist(id);
+    const wishlist = await getWishlist(id, userEmail);
 
     if (!wishlist) {
         console.error('Wishlist not found:', id);
         notFound();
     }
 
-    return <WishlistClient wishlist={wishlist} />;
+    return <WishlistClient wishlist={wishlist} userEmail={userEmail} />;
 }

@@ -31,7 +31,16 @@ export default function LoginDrawer({ isOpen, onOpenChange }: LoginDrawerProps) 
             const result = await login({ email, password });
             if (result.success) {
                 onOpenChange(false);
-                router.push("/wishlists");
+                window.dispatchEvent(new Event('auth-change'));
+
+                if (window.location.pathname.startsWith('/wishlists/')) {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('auth');
+                    router.replace(url.pathname + url.search);
+                    router.refresh();
+                } else {
+                    router.push("/wishlists");
+                }
             } else {
                 setError(result.error);
             }
