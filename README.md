@@ -29,6 +29,20 @@
 
 ---
 
+## 👀 Vision
+
+To eliminate gift-giving disappointment through a social wishlist platform that balances **clarity for the giver** with **mystery for the receiver**.
+
+---
+
+## 📖 The Story of Zylst
+
+In astronomy, the **Zenith** is the highest point directly above an observer. Zylst represents the pinnacle of personal desire — the exact point on the map that leads to someone's greatest happiness.
+
+Most gift-giving is a shot in the dark. Zylst provides the coordinates. By using Zylst, friends aren't just buying products; they are fulfilling the exact vision of their loved ones with **surgical precision and a touch of mystery**. The recipient gets exactly what they wanted. The giver feels like a hero. And the surprise is preserved.
+
+---
+
 ## 🌟 Key Features
 
 ### 🎁 Wishlist Management
@@ -73,9 +87,14 @@ Zylst uses a three-tier permission model:
 - Email waitlist capture with a join form
 - "How It Works" and "Features" sections with scroll-triggered animations
 
-### 🎡 Coming Soon (Beta)
+### 🎡 Coming Soon
 - **The Lucky Wheel** — Friends can spin a fate wheel to randomly decide which gift to grant
 - **Proof of Joy** — Scan a Gift QR to reveal the giver and trigger a confetti celebration
+- **Blessings Board** — A digital signature wall where givers leave messages that unlock on the event date
+- **Secret Santa Mode** — Anonymous group exchanges with an internal chat for Santa to ask recipient questions
+- **Zylst Scraper** — Browser extension to save any product from any URL directly to your list
+
+> See the full [Strategic Roadmap](#️-strategic-roadmap) below for all planned phases.
 
 ---
 
@@ -271,6 +290,68 @@ Zylst is built around a **dark, premium aesthetic**:
 - **Animations**: Framer Motion powers entrance animations, staggered reveals, and micro-interactions
 - **Typography**: System font stack with Tailwind's `font-sans`, tight tracking for headings
 - **Celestial Background**: Animated particle/star canvas for the landing page atmosphere
+
+---
+
+## 🗺️ Strategic Roadmap
+
+### Phase 1 — The Ascent *(Core Utility)*
+> Establish the foundational "Zenith" utility and mystery claim logic.
+
+- [ ] **Zylst Scraper** — Universal browser extension: "Save to Zylst" from any URL
+- [ ] **Mystery Claim Mechanic** — Recipients see "Item Secured"; giver identity hidden until the physical gift is opened
+- [ ] **Zenith Timer** — Countdown to your next milestone (Birthday, Wedding, Anniversary) with reminders to build your list
+- [ ] **Notification Engine v1** — Real-time alerts for "New Wish Added" and "A Wish has been Reached"
+- [ ] **Zylst QR Codes** — Invite QR (links friends to the event list) + Gift-Tag QR (printed sticker for physical boxes)
+
+### Phase 2 — The Social Horizon *(Virality & Sentiment)*
+> Drive virality and sentiment-driven engagement.
+
+- [ ] **Blessings Board** — A digital "Signature Wall" for every event. Friends leave text, sticker, or video blessings that unlock only after the event date — like a birthday card meets a wedding guestbook
+- [ ] **Proof of Joy** — A dedicated gift handover photo/video feature. Scanning the Gift-Tag QR triggers the "Thank You" flow, finally revealing the secret giver and preserving the memory
+- [ ] **Social Blocklist** — Never be reminded about gifting for someone you've blocked (with AI-assisted recognition)
+
+### Phase 3 — The Gamified Peak *(Retention & Fun)*
+> Retention, fun, and the start of monetization.
+
+- [ ] **The Lucky Wheel** — For the "I don't know what to get" friend. Spin to let fate select a gift from the recipient's list *(weighted toward affiliate partners for revenue)*
+- [ ] **Secret Santa Mode** — Group exchange portal with anonymous "Internal Chat" so Santa can ask the recipient questions without revealing identity
+
+### Phase 4 — The Data View *(B2B Scaling)*
+> B2B scaling and trend forecasting powered by intent data.
+
+- [ ] **Trend & Spending Dashboard** — Internal PM view: Desire Velocity (most-added items) and Price Elasticity (discount threshold for Wish → Claim conversion)
+- [ ] **Demographic Insights** — Aggregated age/region spending habits to attract retail partnerships
+- [ ] **Brand Partner API** — Let brands promote items to users whose wishlists suggest a matching taste profile
+
+---
+
+## 💰 Revenue Strategy
+
+Zylst captures **intent data** at the exact moment a user saves a wish — more valuable than traditional past-purchase data.
+
+### 1. Affiliate & Referral Engine *(Primary B2C)*
+Every gift link is a revenue opportunity. Integrate with affiliate networks (Amazon, Shopify, Rakuten) to earn **3–15% commission** on purchases made through Zylst links. Priority given to high-margin categories: Beauty (10–18%), Home/Lifestyle (8–12%).
+
+### 2. B2B Intent Analytics
+Sell aggregated, anonymised trend reports to retailers and brands:
+- **Desire Index** — Which SKUs are being wished for before they spike on a brand's own site
+- **Friction Reports** — Why wishes aren't becoming claims (price? shipping? no promo?)
+- **Wishlist Velocity Alerts** — Early warning when a niche item sees a 300%+ spike in 48 hours
+
+### 3. Service & Mystery Fees
+- **Concierge Fee** — For non-partner stores, Zylst handles the purchase to maintain 100% mystery: flat **$1.99** or **3–5%**
+- **Gift Card Commission** — When users buy gift cards through Zylst: ~5% commission + breakage revenue
+
+### 4. Premium "Celestial" Tier *(Freemium)*
+| Feature | Free | Premium |
+|---|---|---|
+| Blessings Board | Text & stickers | Video blessings, 4K uploads, legacy boards |
+| Wishlist themes | Default | Custom skins (Minimalist Zenith, seasonal, etc.) |
+| Secret Santa | Small groups | Large groups (20+) with automation & chat ($4.99/room) |
+
+### 💡 The Lucky Wheel Strategy
+The wheel isn't purely random — **affiliate partner items carry weighted probability** (a "Golden Wedge"). When the wheel lands on a specific item, Zylst can trigger a real-time **Flash Promo** ("Buy in the next 10 mins for an extra 5% off") to drive immediate conversion.
 
 ---
 
