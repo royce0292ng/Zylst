@@ -1,432 +1,298 @@
-# Zylst
-Zylst is a simple wishlist and event-sharing platform that helps people share what they want for birthdays, Christmas, and special occasions. It’s designed for friends and families who want an easy, stress-free way to give the right gifts without duplicates.
+<div align="center">
 
-## Table of Contents
+<h1>✨ Zylst</h1>
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running the Application](#running-the-application)
-- [Database Management](#database-management)
-- [Development](#development)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
-- [Project Structure](#project-structure)
+<p><strong>Stop Guessing. Gift at the Zenith.</strong></p>
 
-## Features
+<p>
+  The wishlist platform where your deepest desires meet their perfect match—without spoiling the surprise.
+</p>
 
-- ✨ Create and manage wishlists for events
-- 📝 Add items with details (name, description, price, links, tags)
-- ✅ Mark items as completed with animated checkboxes
-- 📅 Set event dates with countdown
-- 🏷️ Categorize items with priority levels
-- 📊 Track progress with live statistics
-- 📱 Fully responsive design (mobile & desktop)
-- 💾 PostgreSQL database with Prisma ORM
-- 🚀 Server Actions for real-time updates
-- 🎨 Modern UI with Tailwind CSS
+<p>
+  <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma" alt="Prisma" />
+  <img src="https://img.shields.io/badge/PostgreSQL-blue?logo=postgresql" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/TailwindCSS-4-38BDF8?logo=tailwindcss" alt="Tailwind" />
+</p>
 
-## Tech Stack
+</div>
 
-- **Framework**: Next.js 14+ (App Router)
-- **Database**: PostgreSQL 15+
-- **ORM**: Prisma 5
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
+---
 
-## Prerequisites
+## 📖 About
 
-Before you begin, ensure you have:
+**Zylst** is a premium social wishlist platform built for celebrations. Create a wishlist for any event—birthday, wedding, graduation—share it with friends and family, and let them claim gifts mysteriously without spoiling the surprise. After the event date passes, the curtain lifts and everyone gets to see who gifted what.
 
-- Node.js 18+ installed
-- PostgreSQL 15+ installed (or access to a PostgreSQL database)
-- npm or yarn package manager
+> Think of it as a beautifully designed, socially-aware alternative to traditional gift registries.
 
-## Installation
+---
+
+## 🌟 Key Features
+
+### 🎁 Wishlist Management
+- Create and name wishlists tied to a specific **event date**
+- Add items with rich metadata: description, product link, estimated price, category, priority (low/medium/high), and tags
+- Inline editing of wishlist name, event date, and all item fields — no modals needed for the owner
+- **Completion progress bar** shows how many items have been claimed
+
+### 🔐 Role-Based Access Control
+Zylst uses a three-tier permission model:
+
+| Role | Permissions |
+|---|---|
+| **Owner** | Full control: edit wishlist, add/delete/edit items, manage collaborators, force-unclaim items |
+| **CoHost** | Can add/edit/delete items and manage collaborator roles |
+| **Viewer** | Can view all items and claim/unclaim their own gifts |
+| **Guest** | View-only; prompted to log in to interact |
+
+### 🕵️ Mystery Claim System
+- Any logged-in user (Viewer, CoHost, or Owner) can **claim** an item by toggling it
+- Before the event date, claimed items show only **"Claimed"** — the claimer's identity is hidden
+- After the event date, the chip reveals the claimer's username
+- **Triple-click easter egg**: The owner/claimer can "peek" at who claimed an item via a 3-click gesture on the chip
+
+### 👥 Collaboration & Sharing
+- Share a direct URL with anyone — no account required to view
+- **QR Code generation** for each wishlist, downloadable as a PNG
+- **Copy Link** button for quick sharing
+- Logged-in users can **join a wishlist** as a Viewer to track it on their dashboard
+- Owners can promote Viewers to CoHosts or remove members entirely
+
+### 🔑 Authentication
+- Cookie-based session management (`httpOnly`, `secure` in production)
+- Sessions last **7 days**
+- Password hashing with **bcrypt** (10 salt rounds)
+- Input validation with **Zod** on both client and server
+- **Inline Login Drawer** on wishlist pages — guests can log in without leaving the page
+
+### 🚀 Landing Page & Waitlist
+- Stunning dark-mode landing page with animated **Celestial Background**
+- **Rolling counter** displaying live waitlist signups
+- Email waitlist capture with a join form
+- "How It Works" and "Features" sections with scroll-triggered animations
+
+### 🎡 Coming Soon (Beta)
+- **The Lucky Wheel** — Friends can spin a fate wheel to randomly decide which gift to grant
+- **Proof of Joy** — Scan a Gift QR to reveal the giver and trigger a confetti celebration
+
+---
+
+## 🏗️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| **Framework** | [Next.js 16](https://nextjs.org/) (App Router, React Compiler enabled) |
+| **UI Library** | React 19 |
+| **Component Library** | [HeroUI v2](https://heroui.com/) |
+| **Animation** | [Framer Motion 12](https://www.framer.com/motion/) |
+| **Icons** | [Lucide React](https://lucide.dev/) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
+| **ORM** | [Prisma 7](https://www.prisma.io/) with `@prisma/adapter-pg` |
+| **Database** | PostgreSQL (via `pg`) |
+| **Auth** | Custom cookie-based sessions + [bcryptjs](https://github.com/dcodeIO/bcrypt.js) |
+| **Validation** | [Zod v4](https://zod.dev/) |
+| **QR Codes** | [qrcode.react](https://github.com/zpao/qrcode.react) |
+| **Language** | TypeScript 5 |
+
+---
+
+## 🗄️ Database Schema
+
+```
+User ─────────────────────────────────────────────────
+  id, email (unique), password (hashed), username (unique)
+  interests[], source
+  → owns Wishlists
+  → member of Collaborator (via Collaborator.userId)
+  → has ClaimedItems (Items they have claimed)
+
+Wishlist ─────────────────────────────────────────────
+  id (cuid), name, eventDate
+  → belongs to User (owner, optional)
+  → has Items[]
+  → has Collaborators[]
+
+Item ──────────────────────────────────────────────────
+  id (cuid), text, completed, position, link, description
+  price, currency, imageUrl, category, priority, tags[]
+  → belongs to Wishlist
+  → claimedBy User (optional, "ClaimedItems" relation)
+
+Collaborator ─────────────────────────────────────────
+  id (cuid), role (VIEWER | COHOST)
+  → links User ↔ Wishlist (unique pair)
+
+Waitlist ─────────────────────────────────────────────
+  id, email (unique), createdAt
+```
+
+---
+
+## 📂 Project Structure
+
+```
+Zylst/
+├── prisma/
+│   ├── schema.prisma       # Database models
+│   ├── seed.ts             # Database seeder
+│   └── migrations/         # Prisma migration history
+│
+├── src/
+│   ├── app/
+│   │   ├── page.tsx        # Landing page
+│   │   ├── layout.tsx      # Root layout
+│   │   ├── globals.css     # Global styles
+│   │   ├── actions/
+│   │   │   ├── auth.ts     # signup, login, logout, getSession
+│   │   │   ├── wishlist.tsx # CRUD for wishlists & items
+│   │   │   └── waitlist.ts # Waitlist join & count
+│   │   ├── signup/         # Signup page
+│   │   └── wishlists/
+│   │       ├── page.tsx        # Wishlists dashboard
+│   │       ├── layout.tsx      # Dashboard layout (sidebar)
+│   │       └── [id]/
+│   │           ├── page.tsx        # Server component (fetches data)
+│   │           └── WishlistClient.tsx # Rich client-side wishlist UI
+│   │
+│   ├── components/
+│   │   ├── CelestialBackGround.tsx  # Animated star/particle background
+│   │   ├── JoinWaitingList.tsx      # Waitlist email form + rolling counter
+│   │   └── ui/
+│   │       ├── Navbar.tsx            # Landing page navbar
+│   │       ├── Footer.tsx            # Site footer
+│   │       ├── LoginDrawer.tsx       # Inline login/signup slide-over
+│   │       ├── WishlistNavbar.tsx    # Wishlist dashboard navbar
+│   │       └── WishlistSidebar.tsx   # Sidebar with wishlist list & creation
+│   │
+│   ├── lib/
+│   │   └── prisma.ts        # Prisma client singleton
+│   │
+│   └── types/
+│       └── wishlist.ts      # TypeScript types for Wishlist, Item, etc.
+│
+├── generated/prisma/        # Generated Prisma client output
+├── next.config.ts           # Next.js config (React Compiler enabled)
+├── package.json
+└── tsconfig.json
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** 20+
+- **PostgreSQL** database (local or hosted)
+- **npm** or equivalent package manager
 
 ### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/royce0292ng/Zylst.git
+git clone https://github.com/your-username/zylst.git
 cd zylst
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 npm install
 ```
 
-### 3. Set Up PostgreSQL Database
+### 3. Configure Environment Variables
 
-**Option A: Local PostgreSQL (Arch Linux)**
-```bash
-# Install PostgreSQL
-sudo pacman -S postgresql
+Create a `.env` file in the project root:
 
-# Initialize database
-sudo -u postgres initdb -D /var/lib/postgres/data
-
-# Start PostgreSQL
-sudo systemctl start postgresql
-sudo systemctl enable postgresql
-
-# Create database and user
-sudo -u postgres psql
-```
-
-In PostgreSQL prompt:
-```sql
-CREATE DATABASE zylst;
-CREATE USER zylst WITH ENCRYPTED PASSWORD 'your_secure_password';
-GRANT ALL PRIVILEGES ON DATABASE zylst TO zylst;
-ALTER USER zylst CREATEDB;
-\c zylst
-GRANT ALL ON SCHEMA public TO zylst;
-\q
-```
-
-## Configuration
-
-### 1. Create Environment File
-
-Create `.env` in the project root:
-```bash
-cp .env.example .env
-```
-
-Or create manually:
 ```env
-# Database Connection
-DATABASE_URL="postgresql://zylst:your_password@localhost:5432/zylst"
-
-# Application
-NODE_ENV=development
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
 ```
 
-### 2. Configure PostgreSQL Authentication (Local Only)
+> Replace `USER`, `PASSWORD`, `HOST`, `PORT`, and `DATABASE` with your PostgreSQL connection details.
 
-Edit `/var/lib/postgres/data/pg_hba.conf`:
+### 4. Run Database Migrations
+
 ```bash
-sudo nano /var/lib/postgres/data/pg_hba.conf
+npx prisma migrate dev
 ```
 
-Change authentication method to `md5`:
-```
-# TYPE  DATABASE        USER            ADDRESS                 METHOD
-local   all             all                                     md5
-host    all             all             127.0.0.1/32            md5
-host    all             all             ::1/128                 md5
-```
+This will apply all migrations and generate the Prisma client into `generated/prisma/`.
 
-Restart PostgreSQL:
+### 5. (Optional) Seed the Database
+
 ```bash
-sudo systemctl restart postgresql
+npx tsx prisma/seed.ts
 ```
 
-## Running the Application
+### 6. Start the Development Server
 
-### 1. Set Up Database Schema
-```bash
-# Run database migrations
-npx prisma migrate dev --name init
-
-# Generate Prisma Client
-npx prisma generate
-
-# Seed initial data
-npx prisma db seed
-```
-
-### 2. Start Development Server
 ```bash
 npm run dev
 ```
 
-The application will be available at: `http://localhost:3000`
-
-### 3. Access Prisma Studio (Database GUI)
-```bash
-npx prisma studio
-```
-
-Opens at: `http://localhost:5555`
-
-## Database Management
-
-### View Data
-```bash
-npx prisma studio
-```
-
-### Create New Migration
-```bash
-npx prisma migrate dev --name description_of_change
-```
-
-### Reset Database
-```bash
-npx prisma migrate reset
-```
-
-This will:
-1. Drop the database
-2. Create a new database
-3. Run all migrations
-4. Seed the database
-
-### Backup Database
-```bash
-# PostgreSQL backup
-pg_dump -U zylst zylst > backup_$(date +%Y%m%d).sql
-
-# Restore backup
-psql -U zylst zylst < backup_20240101.sql
-```
-
-## Development
-
-### Project Structure
-```
-zylst/
-├── src/
-│   ├── app/
-│   │   ├── actions/
-│   │   │   └── wishlist.ts          # Server Actions
-│   │   ├── wishlists/
-│   │   │   └── [id]/
-│   │   │       ├── page.tsx          # Server Component
-│   │   │       └── WishlistClient.tsx # Client Component
-│   │   └── page.tsx                  # Home page (redirect)
-│   ├── components/
-│   │   └── wishlist/                 # Reusable components
-│   ├── lib/
-│   │   └── prisma.ts                 # Prisma Client
-│   └── types/
-│       └── wishlist.ts               # TypeScript types
-├── prisma/
-│   ├── schema.prisma                 # Database schema
-│   └── seed.ts                       # Seed data
-├── .env                              # Environment variables
-├── package.json
-└── README.md
-```
-
-### Key Files
-
-**`prisma/schema.prisma`** - Database schema definition
-**`src/app/actions/wishlist.ts`** - Server-side data operations
-**`src/lib/prisma.ts`** - Database client singleton
-**`src/types/wishlist.ts`** - TypeScript type definitions
-
-### Adding New Features
-
-1. **Update Database Schema**
-```bash
-   # Edit prisma/schema.prisma
-   npx prisma migrate dev --name feature_name
-```
-
-2. **Create Server Actions**
-```typescript
-   // src/app/actions/yourfeature.ts
-   'use server';
-   import { prisma } from '@/lib/prisma';
-```
-
-3. **Update UI Components**
-```typescript
-   // src/app/wishlists/[id]/WishlistClient.tsx
-```
-
-### Code Style
-
-- Use TypeScript for type safety
-- Follow Next.js App Router conventions
-- Use Server Actions for mutations
-- Implement optimistic updates for better UX
-
-## Deployment
-
-### Option 1: Docker (Recommended)
-
-1. **Build Docker Image**
-```bash
-   docker build -t zylst .
-```
-
-2. **Run with Docker Compose**
-```bash
-   docker-compose up -d
-```
-
-3. **View Logs**
-```bash
-   docker-compose logs -f
-```
-
-4. **Stop Application**
-```bash
-   docker-compose down
-```
-
-## Troubleshooting
-
-### Common Issues
-
-**1. "Cannot find module '@prisma/client'"**
-```bash
-npx prisma generate
-```
-
-**2. "Database connection error"**
-- Check `.env` DATABASE_URL is correct
-- Verify PostgreSQL is running: `sudo systemctl status postgresql`
-- Test connection: `psql -U zylst -d zylst -h localhost`
-
-**3. "Permission denied to create database"**
-```bash
-sudo -u postgres psql -c "ALTER USER zylst CREATEDB;"
-```
-
-**4. "Port 3000 already in use"**
-```bash
-# Find process using port 3000
-lsof -i :3000
-# Kill process
-kill -9 
-```
-
-**5. "Prisma schema validation error"**
-```bash
-# Check Prisma version (should be 5.x)
-npx prisma --version
-
-# Downgrade if needed
-npm uninstall prisma @prisma/client
-npm install prisma@5.22.0 @prisma/client@5.22.0
-```
-
-### Debug Mode
-
-Enable query logging:
-```typescript
-// src/lib/prisma.ts
-export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
-});
-```
-
-### Checking Logs
-
-**Development**
-- Check terminal where `npm run dev` is running
-
-**Production (PM2)**
-```bash
-pm2 logs zylst
-```
-
-**Docker**
-```bash
-docker-compose logs -f
-```
-
-## Useful Commands
-
-### Development
-```bash
-npm run dev              # Start dev server
-npm run build            # Build for production
-npm run start            # Start production server
-npm run lint             # Run ESLint
-```
-
-### Database
-```bash
-npx prisma studio        # Open database GUI
-npx prisma migrate dev   # Create new migration
-npx prisma migrate reset # Reset database
-npx prisma db pull       # Pull schema from database
-npx prisma db push       # Push schema to database (dev only)
-npx prisma generate      # Generate Prisma Client
-npx prisma format        # Format schema file
-```
-
-### Docker
-```bash
-docker-compose up -d           # Start containers
-docker-compose down            # Stop containers
-docker-compose logs -f         # View logs
-docker-compose restart         # Restart containers
-docker-compose ps              # List containers
-```
-
-## Security Notes
-
-### Production Checklist
-
-- [ ] Change all default passwords
-- [ ] Use strong DATABASE_URL password
-- [ ] Enable firewall (ufw)
-- [ ] Set up SSL/HTTPS
-- [ ] Enable automatic security updates
-- [ ] Set up regular database backups
-- [ ] Use environment variables for secrets
-- [ ] Disable Prisma Studio in production
-- [ ] Set NODE_ENV=production
-
-### Firewall Setup
-```bash
-sudo ufw allow 22/tcp
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
-
-## Performance Tips
-
-1. **Enable Connection Pooling**
-   - Use Supabase connection pooling
-   - Or set up PgBouncer
-
-2. **Database Indexes**
-   - Already configured in `schema.prisma`
-   - Monitor slow queries with Prisma logging
-
-3. **Caching**
-   - Next.js automatically caches Server Components
-   - Use `revalidatePath()` to invalidate cache
-
-4. **Optimize Images**
-   - Use Next.js Image component for item images
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch: `git checkout -b feature/amazing-feature`
-3. Commit changes: `git commit -m 'Add amazing feature'`
-4. Push to branch: `git push origin feature/amazing-feature`
-5. Open Pull Request
-
-## License
-
-This project is licensed under the Apache License.
-
-## Support
-
-For issues and questions:
-- GitHub Issues: https://github.com/yourusername/zylst/issues
-- Documentation: https://github.com/yourusername/zylst/wiki
-
-## Acknowledgments
-
-- Built with Next.js and Prisma
-- Icons by Lucide
-- Styled with Tailwind CSS
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ---
 
-**Current Version**: 0.0.1
-**Last Updated**: January 2026
+## 📜 Available Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start the Next.js development server |
+| `npm run build` | Build the production bundle |
+| `npm run start` | Start the production server |
+| `npm run lint` | Run ESLint |
+| `npx prisma migrate dev` | Apply and generate new migrations |
+| `npx prisma studio` | Open Prisma Studio (database GUI) |
+| `npx tsx prisma/seed.ts` | Seed the database with initial data |
+
+---
+
+## 🔒 Authentication Flow
+
+Zylst uses a **lightweight custom session system** — no third-party auth library needed:
+
+1. User signs up or logs in via a **Server Action** (`auth.ts`)
+2. Credentials are validated with **Zod**, password compared with **bcrypt**
+3. On success, an `httpOnly` cookie named `session` is set (stores user email)
+4. Server components read this cookie via `getSession()` to determine the current user
+5. Sessions expire after **7 days**
+6. Logout deletes the cookie immediately
+
+---
+
+## 🎨 Design Philosophy
+
+Zylst is built around a **dark, premium aesthetic**:
+
+- **Color palette**: Deep navy/black background (`#020617`), blue accent (`#3B82F6`), zinc tones for UI elements
+- **Glassmorphism**: `backdrop-blur`, semi-transparent cards, subtle white borders
+- **Animations**: Framer Motion powers entrance animations, staggered reveals, and micro-interactions
+- **Typography**: System font stack with Tailwind's `font-sans`, tight tracking for headings
+- **Celestial Background**: Animated particle/star canvas for the landing page atmosphere
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please fork the repository, make your changes in a feature branch, and open a pull request.
+
+1. Fork the project
+2. Create your feature branch: `git checkout -b feature/AmazingFeature`
+3. Commit your changes: `git commit -m 'Add some AmazingFeature'`
+4. Push to the branch: `git push origin feature/AmazingFeature`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for full details.
+
+---
+
+<div align="center">
+  <p>Built with ❤️ to make gifting extraordinary.</p>
+  <p><strong>Zylst — Gift at the Zenith.</strong></p>
+</div>

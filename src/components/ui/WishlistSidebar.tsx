@@ -41,7 +41,8 @@ export default function WishlistSidebar({ isOpen, onOpenChange }: WishlistSideba
 
     const fetchWishlists = async () => {
         const data = await getWishlists();
-        setWishlists(data as Wishlist[]);
+        // data contains objects with _role property ('OWNER', 'VIEWER', 'COHOST')
+        setWishlists(data as any[]);
     };
 
     useEffect(() => {
@@ -105,32 +106,78 @@ export default function WishlistSidebar({ isOpen, onOpenChange }: WishlistSideba
                                 <Divider className="bg-white/5" />
 
                                 <ScrollShadow className="h-[calc(100vh-180px)] px-4 py-4">
-                                    <div className="space-y-1">
-                                        {wishlists.map((wishlist) => (
-                                            <Link
-                                                key={wishlist.id}
-                                                href={`/wishlists/${wishlist.id}`}
-                                                onPress={onClose}
-                                                className={`
-                                                    flex flex-col items-start gap-1 p-3 rounded-xl transition-all duration-200
-                                                    ${currentId === wishlist.id
-                                                        ? "bg-blue-600/20 border border-blue-500/30 text-white"
-                                                        : "hover:bg-white/5 text-zinc-400 hover:text-white border border-transparent"
-                                                    }
-                                                `}
-                                            >
-                                                <div className="flex items-center justify-between w-full">
-                                                    <span className="font-medium truncate">{wishlist.name}</span>
-                                                    <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">
-                                                        {wishlist.items.length} items
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
-                                                    <Calendar size={10} />
-                                                    <span>{new Date(wishlist.eventDate).toLocaleDateString()}</span>
-                                                </div>
-                                            </Link>
-                                        ))}
+                                    <div className="space-y-6">
+                                        {/* My Wishlists Section */}
+                                        <div className="space-y-2">
+                                            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">My Wishlists</h3>
+                                            <div className="space-y-1">
+                                                {wishlists.filter((w: any) => w._role === 'OWNER').length === 0 ? (
+                                                    <p className="text-xs text-zinc-600 px-2 italic">No wishlists created yet.</p>
+                                                ) : (
+                                                    wishlists.filter((w: any) => w._role === 'OWNER').map((wishlist) => (
+                                                        <Link
+                                                            key={wishlist.id}
+                                                            href={`/wishlists/${wishlist.id}`}
+                                                            onPress={onClose}
+                                                            className={`
+                                                                flex flex-col items-start gap-1 p-3 rounded-xl transition-all duration-200
+                                                                ${currentId === wishlist.id
+                                                                    ? "bg-blue-600/20 border border-blue-500/30 text-white"
+                                                                    : "hover:bg-white/5 text-zinc-400 hover:text-white border border-transparent"
+                                                                }
+                                                            `}
+                                                        >
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <span className="font-medium truncate">{wishlist.name}</span>
+                                                                <span className="text-[10px] bg-white/10 px-1.5 py-0.5 rounded-full">
+                                                                    {wishlist.items?.length || 0} items
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+                                                                <Calendar size={10} />
+                                                                <span>{new Date(wishlist.eventDate).toLocaleDateString()}</span>
+                                                            </div>
+                                                        </Link>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Joined Wishlists Section */}
+                                        <div className="space-y-2">
+                                            <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">Joined Wishlists</h3>
+                                            <div className="space-y-1">
+                                                {wishlists.filter((w: any) => w._role !== 'OWNER').length === 0 ? (
+                                                    <p className="text-xs text-zinc-600 px-2 italic">You haven't joined any wishlists.</p>
+                                                ) : (
+                                                    wishlists.filter((w: any) => w._role !== 'OWNER').map((wishlist: any) => (
+                                                        <Link
+                                                            key={wishlist.id}
+                                                            href={`/wishlists/${wishlist.id}`}
+                                                            onPress={onClose}
+                                                            className={`
+                                                                flex flex-col items-start gap-1 p-3 rounded-xl transition-all duration-200
+                                                                ${currentId === wishlist.id
+                                                                    ? "bg-purple-600/20 border border-purple-500/30 text-white"
+                                                                    : "hover:bg-white/5 text-zinc-400 hover:text-white border border-transparent"
+                                                                }
+                                                            `}
+                                                        >
+                                                            <div className="flex items-center justify-between w-full">
+                                                                <span className="font-medium truncate">{wishlist.name}</span>
+                                                                <span className="text-[10px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded-full">
+                                                                    {wishlist._role === 'COHOST' ? 'Co-host' : 'Viewer'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+                                                                <Calendar size={10} />
+                                                                <span>{new Date(wishlist.eventDate).toLocaleDateString()}</span>
+                                                            </div>
+                                                        </Link>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </ScrollShadow>
                             </DrawerBody>

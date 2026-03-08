@@ -24,8 +24,13 @@ model Wishlist {
   name      String
   eventDate DateTime
   items     Item[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId        String?  // The owner
+  user          User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collaborators Collaborator[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
 }
 
 model Item {
@@ -43,10 +48,13 @@ model Item {
   tags        String[] @default([])
   wishlistId  String
   wishlist    Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  claimedById String?
+  claimedBy   User?    @relation("ClaimedItems", fields: [claimedById], references: [id], onDelete: SetNull)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([wishlistId])
+  @@index([claimedById])
 }
 
 model User {
@@ -55,7 +63,30 @@ model User {
   password  String
   username  String   @unique
   interests String[] @default([])
-  source    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  source        String?
+  wishlists     Wishlist[] // Owned wishlists
+  collaborations Collaborator[] // Wishlists user has joined
+  claimedItems  Item[]     @relation("ClaimedItems")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Role {
+  VIEWER
+  COHOST
+}
+
+model Collaborator {
+  id         String   @id @default(cuid())
+  wishlistId String
+  wishlist   Wishlist @relation(fields: [wishlistId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       Role     @default(VIEWER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([wishlistId, userId]) // A user can only join a wishlist once
+  @@index([userId])
+  @@index([wishlistId])
 }

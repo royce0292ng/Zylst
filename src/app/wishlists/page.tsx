@@ -12,9 +12,10 @@ export default async function WishlistsPage() {
     let wishlist = null;
     let errorMsg = "";
 
-    // Try to Get the first wishlist
+    // Try to Get the first wishlist for this user
     try {
         wishlist = await prisma.wishlist.findFirst({
+            where: { user: { email: session.value } },
             orderBy: { createdAt: 'desc' },
         });
     } catch (e) {
